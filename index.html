@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Course Grade Scraper</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        margin: 20px;
+      }
+      input,
+      button {
+        margin: 10px;
+        padding: 10px;
+        font-size: 16px;
+      }
+      table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        border: 1px solid black;
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background-color: #f2f2f2;
+        cursor: pointer;
+      }
+      th:hover {
+        background-color: #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>Search for Course Grades</h2>
+    <input
+      type="text"
+      id="dept"
+      placeholder="Department (e.g., CSCE)"
+      required
+    />
+    <input
+      type="text"
+      id="number"
+      placeholder="Course Number (e.g., 221)"
+      required
+    />
+    <button onclick="fetchData()">Get Grades</button>
+
+    <div id="output"></div>
+
+    <script>
+      async function fetchData() {
+        const dept = document.getElementById("dept").value.trim();
+        const number = document.getElementById("number").value.trim();
+        if (!dept || !number) {
+          alert("Please enter both department and course number.");
+          return;
+        }
+
+        const response = await fetch(`/scrape?dept=${dept}&number=${number}`);
+        const data = await response.json();
+
+        const outputDiv = document.getElementById("output");
+        outputDiv.innerHTML = ""; // Clear previous results
+
+        if (data.error) {
+          outputDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
+          return;
+        }
+
+        // Create table
+        let tableHtml = `<h3>Grades for ${data.dept} ${data.number}</h3>
+                <table id="sortableTable">
+                    <thead>
+                        <tr>
+                            ${data.tableData[0]
+                              .map(
+                                (cell, index) =>
+                                  `<th onclick="sortTable(${index})">${cell}</th>`
+                              )
+                              .join("")}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${data.tableData
+                          .slice(1)
+                          .map(
+                            (row) =>
+                              `<tr>${row
+                                .map((cell) => `<td>${cell}</td>`)
+                                .join("")}</tr>`
+                          )
+                          .join("")}
+                    </tbody>
+                </table>`;
+
+        outputDiv.innerHTML = tableHtml;
+      }
+
+      function sortTable(columnIndex) {
+        const table = document.getElementById("sortableTable");
+        const tbody = table.querySelector("tbody");
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+
+        const isNumeric = !isNaN(rows[0].cells[columnIndex].innerText.trim());
+        const ascending = table.dataset.sortOrder !== "asc";
+        table.dataset.sortOrder = ascending ? "asc" : "desc";
+
+        rows.sort((rowA, rowB) => {
+          const cellA = rowA.cells[columnIndex].innerText.trim();
+          const cellB = rowB.cells[columnIndex].innerText.trim();
+          return isNumeric
+            ? ascending
+              ? cellA - cellB
+              : cellB - cellA
+            : ascending
+            ? cellA.localeCompare(cellB)
+            : cellB.localeCompare(cellA);
+        });
+
+        tbody.innerHTML = "";
+        rows.forEach((row) => tbody.appendChild(row));
+      }
+    </script>
+  </body>
+</html>
