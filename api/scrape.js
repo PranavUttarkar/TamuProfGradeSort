@@ -1,6 +1,12 @@
 import puppeteer from 'puppeteer-core';
 import chrome from 'chrome-aws-lambda';
 
+const browser = await chromium.puppeteer.launch({
+    args: [...chromium.args, '--no-sandbox', '--disable-setuid-sandbox'],
+    executablePath: await chromium.executablePath,
+    headless: chromium.headless,
+  });
+
 export default async function handler(req, res) {
     const { dept, number } = req.query;
 
