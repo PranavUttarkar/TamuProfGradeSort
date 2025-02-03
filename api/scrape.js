@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer-core';
+import chrome from 'chrome-aws-lambda';
 
 export default async function handler(req, res) {
     const { dept, number } = req.query;
@@ -10,16 +11,22 @@ export default async function handler(req, res) {
     const url = `https://anex.us/grades/?dept=${dept.toUpperCase()}&number=${number}`;
 
     try {
-        const browser = await puppeteer.launch({ headless: true });
+        const browser = await puppeteer.launch({
+            executablePath: await chrome.executablePath,
+            headless: chrome.headless,
+            args: chrome.args,
+            defaultViewport: chrome.defaultViewport,
+        });
+
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
 
-        await page.waitForSelector('#dataTable', { timeout: 10000 });
+        await page.waitForSelector('#dataTable', { timeout: 30000 });
 
         await page.waitForFunction(() => {
             const tbody = document.querySelector('#dataTable tbody');
             return tbody && tbody.children.length > 0;
-        }, { timeout: 10000 });
+        }, { timeout: 30000 });
 
         const tableData = await page.evaluate(() => {
             const table = document.querySelector('#dataTable');

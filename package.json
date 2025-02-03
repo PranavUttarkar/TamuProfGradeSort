@@ -11,6 +11,7 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
+    "chrome-aws-lambda": "^10.1.0",
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "puppeteer": "^24.1.1",
