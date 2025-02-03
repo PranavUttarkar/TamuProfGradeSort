@@ -24,9 +24,13 @@ app.get("/scrape", async (req, res) => {
     const url = `https://anex.us/grades/?dept=${dept.toUpperCase()}&number=${number}`;
 
     try {
-        const browser = await puppeteer.launch({ headless: "new" });
+        const browser = await puppeteer.launch({
+            headless: true,  // Set to true to run in headless mode
+            args: ['--no-sandbox', '--disable-setuid-sandbox'],  // Add these flags to fix sandbox issue
+            timeout: 30000  // Optional: Set a timeout for the browser launch
+        });
         const page = await browser.newPage();
-        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
+        await page.goto(url, { waitUntil: "domcontentloaded", timeout: 100000 });
 
         await page.waitForSelector("#dataTable", { timeout: 100000 });
 
