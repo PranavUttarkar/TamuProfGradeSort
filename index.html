@@ -34,7 +34,9 @@
           return;
         }
 
-        const response = await fetch(`/scrape?dept=${dept}&number=${number}`);
+        const response = await fetch(
+          `/api/scrape?dept=${dept}&number=${number}`
+        );
         const data = await response.json();
 
         const outputDiv = document.getElementById("output");

@@ -1,14 +1,14 @@
-const express = require("express");
+// const express = require("express");
 const puppeteer = require("puppeteer");
 const cors = require("cors");
 const path = require("path");
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+// const app = express();
+// const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-app.use(express.json());
-app.use(express.static(__dirname)); // Serves index.html and assets
+// app.use(express.json());
+// app.use(express.static(__dirname)); // Serves index.html and assets
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "index.html"));
@@ -58,6 +58,6 @@ app.get("/scrape", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server is running on http://localhost:${PORT}`);
-});
+// app.listen(PORT, () => {
+//     console.log(`Server is running on http://localhost:${PORT}`);
+// });
