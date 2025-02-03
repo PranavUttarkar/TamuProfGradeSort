@@ -15,7 +15,7 @@ export default async function handler(req, res) {
     }
 
     const url = `https://anex.us/grades/?dept=${dept.toUpperCase()}&number=${number}`;
-
+    console.log('Scraping:', url);
     try {
         const browser = await puppeteer.launch({
             executablePath: await chrome.executablePath,
@@ -23,6 +23,7 @@ export default async function handler(req, res) {
             args: chrome.args,
             defaultViewport: chrome.defaultViewport,
         });
+        console.log('Browser launched');
 
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 0 });
