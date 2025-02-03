@@ -1,7 +1,13 @@
 const express = require("express");
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-core");
 const cors = require("cors");
 const path = require("path");
+const puppeteer = require('puppeteer-core');
+
+const browser = await puppeteer.launch({
+    executablePath: '/usr/bin/chromium-browser', // Adjust this for your environment (could be a cloud-based browser)
+    args: ['--no-sandbox', '--disable-setuid-sandbox'] // Required for serverless environments
+});
 
 const app = express();
 const PORT = process.env.PORT || 3000;
