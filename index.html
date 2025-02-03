@@ -3,53 +3,22 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
 
     <title>Course Grade Scraper</title>
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        text-align: center;
-        margin: 20px;
-      }
-      input,
-      button {
-        margin: 10px;
-        padding: 10px;
-        font-size: 16px;
-      }
-      table {
-        width: 80%;
-        margin: 20px auto;
-        border-collapse: collapse;
-      }
-      th,
-      td {
-        border: 1px solid black;
-        padding: 8px;
-        text-align: left;
-      }
-      th {
-        background-color: #f2f2f2;
-        cursor: pointer;
-      }
-      th:hover {
-        background-color: #ddd;
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <h2>Search for Course Grades</h2>
     <input
       type="text"
       id="dept"
-      placeholder="Department (e.g., MATH)"
+      placeholder="Department (e.g., CSCE)"
       required
     />
     <input
       type="text"
       id="number"
-      placeholder="Course Number (e.g., 251)"
+      placeholder="Course Number (e.g., 221)"
       required
     />
     <button onclick="fetchData()">Get Grades</button>
