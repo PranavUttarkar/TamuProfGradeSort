@@ -1,0 +1,184 @@
+/* General Page Styling */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f8f8;
+    color: #333;
+    text-align: center;
+    margin: 20px;
+    animation: fadeIn 1s ease-in-out;
+}
+
+/* Page Fade-in Animation */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Card-like Container */
+.container {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 15px rgba(80, 0, 0, 0.2);
+    width: 50%;
+    margin: auto;
+    border-top: 5px solid #500000; /* TAMU Maroon */
+    animation: slideUp 1s ease-in-out;
+}
+
+/* Slide-Up Animation */
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Heading */
+h2 {
+    color: #500000;
+    font-size: 24px;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+/* Input Fields */
+input {
+    width: 40%;
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    border: 2px solid #500000;
+    background-color: #fff;
+    color: #333;
+    font-size: 16px;
+    text-align: center;
+    transition: 0.3s;
+    outline: none;
+}
+
+/* Input Glow Effect */
+input:focus {
+    border-color: #740000;
+    box-shadow: 0px 0px 10px rgba(116, 0, 0, 0.6);
+    transform: scale(1.02);
+}
+
+/* Button */
+button {
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    background: linear-gradient(90deg, #500000, #740000);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s ease-in-out;
+    box-shadow: 0px 4px 10px rgba(80, 0, 0, 0.4);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button Hover Effect */
+button:hover {
+    background: linear-gradient(90deg, #740000, #500000);
+    transform: scale(1.05);
+    box-shadow: 0px 0px 15px rgba(116, 0, 0, 0.8);
+}
+
+/* Button Glow Effect */
+button::after {
+    content: '';
+    position: absolute;
+    width: 150%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.2);
+    top: 0;
+    left: -150%;
+    transform: skewX(-30deg);
+    transition: 0.5s;
+}
+
+button:hover::after {
+    left: 150%;
+}
+
+/* Table */
+table {
+    width: 80%;
+    margin: 20px auto;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0px 4px 15px rgba(80, 0, 0, 0.2);
+    animation: fadeIn 1.5s ease-in-out;
+}
+
+/* Table Headers */
+th {
+    background-color: #500000;
+    padding: 12px;
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+}
+
+/* Table Header Hover Effect */
+th:hover {
+    background-color: #740000;
+}
+
+/* Header Sort Animation */
+th::after {
+    content: "▼";
+    font-size: 12px;
+    position: absolute;
+    right: 10px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+th:hover::after {
+    opacity: 1;
+}
+
+/* Table Rows */
+td {
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+}
+
+/* Alternating Row Colors */
+tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* Row Hover Effect */
+tbody tr:hover {
+    background: linear-gradient(90deg, #ffdddd, #ffeeee);
+    transition: 0.3s;
+}
+
+/* Glowing Effect on Hover */
+tbody tr:hover td {
+    box-shadow: inset 0px 0px 8px rgba(255, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+    .container {
+        width: 80%;
+    }
+    
+    input {
+        width: 80%;
+    }
+    
+    table {
+        width: 100%;
+    }
+}
