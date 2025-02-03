@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "npm install --legacy-peer-deps"
   },
   "keywords": [],
   "author": "Pranav Uttarkar",
@@ -15,8 +16,6 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "puppeteer": "^24.1.1",
-    "puppeteer-core": "^10.1.1",
-    "postinstall": "npm install --legacy-peer-deps"
-
+    "puppeteer-core": "^10.1.1"
   }
 }
