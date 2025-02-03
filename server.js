@@ -28,12 +28,12 @@ app.get("/scrape", async (req, res) => {
         const page = await browser.newPage();
         await page.goto(url, { waitUntil: "domcontentloaded", timeout: 0 });
 
-        await page.waitForSelector("#dataTable", { timeout: 10000 });
+        await page.waitForSelector("#dataTable", { timeout: 100000 });
 
         await page.waitForFunction(() => {
             const tbody = document.querySelector("#dataTable tbody");
             return tbody && tbody.children.length > 0;
-        }, { timeout: 10000 });
+        }, { timeout: 100000 });
 
         const tableData = await page.evaluate(() => {
             const table = document.querySelector("#dataTable");
