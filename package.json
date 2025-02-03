@@ -1,7 +1,7 @@
 {
   "name": "prof-grade-view-and-sorting",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,8 +11,8 @@
   "type": "commonjs",
   "description": "",
   "dependencies": {
-    "chrome-aws-lambda": "^10.1.0",
     "cors": "^2.8.5",
-    "puppeteer-core": "^10.1.1"
+    "express": "^4.21.2",
+    "puppeteer": "^24.1.1"
   }
 }
