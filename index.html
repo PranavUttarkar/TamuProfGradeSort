@@ -43,13 +43,13 @@
     <input
       type="text"
       id="dept"
-      placeholder="Department (e.g., CSCE)"
+      placeholder="Department (e.g., MATH)"
       required
     />
     <input
       type="text"
       id="number"
-      placeholder="Course Number (e.g., 221)"
+      placeholder="Course Number (e.g., 251)"
       required
     />
     <button onclick="fetchData()">Get Grades</button>
@@ -65,9 +65,7 @@
           return;
         }
 
-        const response = await fetch(
-          `/api/scrape?dept=${dept}&number=${number}`
-        );
+        const response = await fetch(`/scrape?dept=${dept}&number=${number}`);
         const data = await response.json();
 
         const outputDiv = document.getElementById("output");
