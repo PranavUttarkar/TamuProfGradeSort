@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles.css" />
     <link rel="icon" href="./public/favicon.png" type="image/png" />
 
-    <title>Course Grade Scraper</title>
+    <title>bit.ly/profsort</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -40,20 +40,20 @@
     </style>
   </head>
   <body>
-    <h2>Search for Course Grades</h2>
+    <h2>View Historic Grades for a Course!</h2>
     <input
       type="text"
       id="dept"
-      placeholder="Department (e.g., CSCE)"
+      placeholder="Enter Department (e.g., CSCE)"
       required
     />
     <input
       type="text"
       id="number"
-      placeholder="Course Number (e.g., 221)"
+      placeholder="Enter Course Number (e.g., 221)"
       required
     />
-    <button onclick="fetchData()">Get Grades</button>
+    <button onclick="fetchData()">View Grades</button>
 
     <input type="text" id="searchText" placeholder="Search For Professor:" ; />
     <button onclick="findText()">Find in Table</button>
@@ -84,7 +84,7 @@
               element.children.length === 0 &&
               element.innerText.includes(searchText)
             ) {
-              element.style.backgroundColor = "yellow"; // Highlight matching elements
+              element.style.backgroundColor = "green"; // Highlight matching elements
               found = true;
             } else {
               element.style.backgroundColor = "";
@@ -129,9 +129,36 @@
         }
 
         // Create table
-        let tableHtml = `<h3>Grades for ${data.dept} ${data.number}</h3>
-        <h4><strong>Click on a column header to sort!<strong></h4>
-          <p> Ctrl + F  </p>
+        let tableHtml = `
+        <h4><strong>Click column header to sort<strong></h4>
+             <h5>
+                      <strong> ${data.dept.toUpperCase()} ${
+          data.number
+        }   |  Historic  GPA:</strong>
+                        ${(
+                          data.tableData
+                            .slice(1)
+                            .reduce(
+                              (sum, row) => sum + parseFloat(row[3]) || 0,
+                              0
+                            ) /
+                          (data.tableData.length - 1)
+                        ).toFixed(3)}
+                      
+                        <strong>                  GPA Since 2022:</strong>
+                        ${(
+                          data.tableData
+                            .slice(1)
+                            .filter((row) => parseInt(row[0]) >= 2022)
+                            .reduce(
+                              (sum, row) => sum + parseFloat(row[3]) || 0,
+                              0
+                            ) /
+                          data.tableData
+                            .slice(1)
+                            .filter((row) => parseInt(row[0]) >= 2022).length
+                        ).toFixed(3)}
+                      </h5>
                 <table id="sortableTable">
                     <thead>
                         <tr>
@@ -153,7 +180,9 @@
                                 .join("")}</tr>`
                           )
                           .join("")}
-                    </tbody>
+                      </tbody>
+                    </table>
+                   
                 </table>`;
 
         outputDiv.innerHTML = tableHtml;

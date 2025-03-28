@@ -31,13 +31,19 @@ body {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
-
+/* Subheading (h5) Styling */
+h5 {
+    color: #740000;
+    font-size: 18px;
+    font-weight: bold;
+    margin: 15px 0;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.526);
+}
 /* Heading */
 h2 {
     color: #500000;
     font-size: 24px;
     font-weight: bold;
-    text-transform: uppercase;
     letter-spacing: 1px;
 }
 
@@ -50,7 +56,7 @@ h4 {
 
 /* Input Fields */
 input {
-    width: 40%;
+    width: 27.5%;
     padding: 10px;
     margin: 10px;
     border-radius: 8px;
