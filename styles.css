@@ -41,6 +41,13 @@ h2 {
     letter-spacing: 1px;
 }
 
+h4 {
+    color: #500000;
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
 /* Input Fields */
 input {
     width: 40%;

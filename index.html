@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="icon" href="favicon.png" type="image/png" />
 
     <title>Course Grade Scraper</title>
     <style>
@@ -54,8 +55,59 @@
     />
     <button onclick="fetchData()">Get Grades</button>
 
-    <div id="output"></div>
+    <input type="text" id="searchText" placeholder="Search For Professor:" ; />
+    <button onclick="findText()">Find in Table</button>
+    <button
+      onclick="window.open(`https://www.google.com/search?q=${document.getElementById('searchText').value.trim()}+${document.getElementById('dept').value.trim()}+${document.getElementById('number').value.trim()}+tamu+rate+my+professor`)"
+    >
+      Find on Rate My Prof
+    </button>
+    <button
+      onclick="window.open(`https://www.google.com/search?q=${document.getElementById('searchText').value.trim()}+${document.getElementById('dept').value.trim()}+${document.getElementById('number').value.trim()}+tamu+reddit`)"
+    >
+      Find on Reddit
+    </button>
 
+    <div id="output"></div>
+    <script>
+      function findText() {
+        const searchText = document
+          .getElementById("searchText")
+          .value.trim()
+          .toUpperCase();
+        let found = false;
+        console.log(searchText);
+        if (searchText) {
+          const elements = document.body.getElementsByTagName("*");
+          for (let element of elements) {
+            if (
+              element.children.length === 0 &&
+              element.innerText.includes(searchText)
+            ) {
+              element.style.backgroundColor = "yellow"; // Highlight matching elements
+              found = true;
+            } else {
+              element.style.backgroundColor = "";
+            }
+          }
+          console.log(found);
+          if (found) {
+            const message = document.createElement("p");
+            message.id = "highlightMessage";
+            message.innerText = "Text highlighted in the document!";
+            message.style.color = "green";
+            document.body.appendChild(message);
+          }
+
+          setTimeout(() => {
+            const existingMessage = document.getElementById("highlightMessage");
+            if (existingMessage) {
+              existingMessage.remove();
+            }
+          }, 3000);
+        }
+      }
+    </script>
     <script>
       async function fetchData() {
         const dept = document.getElementById("dept").value.trim();
@@ -78,7 +130,8 @@
 
         // Create table
         let tableHtml = `<h3>Grades for ${data.dept} ${data.number}</h3>
-        <h4>Click on a column header to sort</h4>
+        <h4><strong>Click on a column header to sort!<strong></h4>
+          <p> Ctrl + F  </p>
                 <table id="sortableTable">
                     <thead>
                         <tr>
