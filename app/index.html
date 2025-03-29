@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="styles.css" />
-    <link rel="icon" href="./public/favicon.png" type="image/png" />
+    <link rel="icon" href="favicon.png" type="image/png" />
 
     <title>bit.ly/profsort</title>
     <style>
@@ -54,7 +54,7 @@
     gtag("config", "G-54S96PXT2Z");
   </script>
   <body>
-    <h2>View Historic Grades for a Course!</h2>
+    <h2>Bit.ly/profsort:    TAMU Course Grades & Info!</h2>
     <input
       type="text"
       id="dept"
@@ -66,8 +66,26 @@
       id="number"
       placeholder="Enter Course Number (e.g., 221)"
       required
+      onkeypress="if(event.key === 'Enter') fetchData()"
     />
-    <button onclick="fetchData()">View Grades</button>
+    <script>
+      document.getElementById("dept").addEventListener("keypress", (event) => {
+      if (event.key === "Enter") fetchData();
+      });
+    </script>
+    
+    <button onclick="fetchData()" id="viewGradesButton">View Grades</button>
+    <script>
+      const button = document.getElementById("viewGradesButton");
+      button.addEventListener("click", () => {
+        button.innerText = "Loading...";
+        button.disabled = true;
+        setTimeout(() => {
+          button.innerText = "View Grades";
+          button.disabled = false;
+        }, 3000); // Reset after 3 seconds or when fetchData completes
+      });
+    </script>
 
     <input type="text" id="searchText" placeholder="Search For Professor:" ; />
     <button onclick="findText()">Find in Table</button>
@@ -81,6 +99,7 @@
     >
       Find on Reddit
     </button>
+<br></br>
 
     <div id="output"></div>
     <script>
@@ -141,14 +160,18 @@
           outputDiv.innerHTML = `<p style="color: red;">${data.error}</p>`;
           return;
         }
+        console.log("Fetched Data:", data);
 
         // Create table
         let tableHtml = `
-        <h4><strong>Click column header to sort<strong></h4>
-             <h5>
-                      <strong> ${data.dept.toUpperCase()} ${
-          data.number
-        }   |  Historic  GPA:</strong>
+                      <div style="border: 2px solid #4CAF50; padding: 15px; margin: 20px; border-radius: 10px; background-color: #f9f9f9;">
+                        <h3 style="color: #4CAF50; margin-bottom: 10px;">${data.catalogData.courseDescription}</h3>
+                        <p style="font-size: 16px; color: #555; line-height: 1.5; margin-top: 10px;">
+                           ${data.catalogData.prerequisites}
+                        </p>
+                      </div>
+         </br></br>
+             <h5> <strong> Historic  GPA:</strong>
                         ${(
                           data.tableData
                             .slice(1)
@@ -158,8 +181,8 @@
                             ) /
                           (data.tableData.length - 1)
                         ).toFixed(3)}
-                      
-                        <strong>                  GPA Since 2022:</strong>
+                     
+                        <strong>      |   GPA Since 2022:</strong>
                         ${(
                           data.tableData
                             .slice(1)
@@ -173,6 +196,8 @@
                             .filter((row) => parseInt(row[0]) >= 2022).length
                         ).toFixed(3)}
                       </h5>
+                              <h4><strong>Click column header to sort<strong></h4><h5>
+
                 <table id="sortableTable">
                     <thead>
                         <tr>
