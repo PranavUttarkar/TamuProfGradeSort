@@ -45,7 +45,7 @@ app.get("/scrape", async (req, res) => {
         // Scrape grades data
         console.log("Scraping grades data...");
         await page.goto(gradesUrl, { waitUntil: "domcontentloaded", timeout: 100000 });
-        await page.waitForSelector("#dataTable", { timeout: 10000 });
+        await page.waitForSelector("#dataTable", { timeout: 100000 });
         await page.waitForFunction(() => {
             const tbody = document.querySelector("#dataTable tbody");
             return tbody && tbody.children.length > 0;
@@ -67,7 +67,7 @@ app.get("/scrape", async (req, res) => {
         // Scrape catalog data
         console.log("Scraping catalog data...");
         await page.goto(catalogUrl, { waitUntil: "domcontentloaded", timeout: 100000 });
-        await page.waitForSelector("#sc_sccoursedescs", { timeout: 10000 });
+        await page.waitForSelector("#sc_sccoursedescs", { timeout: 100000 });
 console.log("Waiting for catalog data to load...");
 page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
 
@@ -83,8 +83,13 @@ console.log("Searching for course description and prerequisites...");
                     if (nextParagraph && nextParagraph.tagName.toLowerCase() === "p") {
                         const paragraphText = nextParagraph.innerHTML;
                         if (paragraphText.toLowerCase().includes("prerequisite")) {
-                            prerequisites = paragraphText;
+                            prerequisites = paragraphText ;
                             console.log("Prerequisites:", prerequisites);
+                        }
+                        else{
+                            prerequisites = paragraphText + "No Prerequisites!";
+                            console.log("Prerequisites:", prerequisites);
+                         
                         }
                         courseDescription = h2.textContent;
                         console.log("Course Description:", courseDescription);
@@ -108,7 +113,7 @@ console.log("courseDescription:", catalogData.courseDescription);
         });
     } catch (error) {
         console.error("Error scraping:", error);
-        res.status(500).json({ error: "Failed to scrape data." });
+        res.status(500).json({ error: "Failed to scrape data. is the Course Code correct? If buggin Please click the report a bug Button!" });
     }
 });
 
