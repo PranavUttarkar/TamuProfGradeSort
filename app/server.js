@@ -35,7 +35,7 @@ app.get("/scrape", async (req, res) => {
         const browser = await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            timeout: 30000
+            timeout: 50000
         });
 
 
@@ -49,7 +49,7 @@ app.get("/scrape", async (req, res) => {
         await page.waitForFunction(() => {
             const tbody = document.querySelector("#dataTable tbody");
             return tbody && tbody.children.length > 0;
-        }, { timeout: 10000 });
+        }, { timeout: 100000 });
 
 
         const tableData = await page.evaluate(() => {

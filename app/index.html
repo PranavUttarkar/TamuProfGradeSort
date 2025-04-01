@@ -82,7 +82,9 @@
       });
     </script>
     
-    <button onclick="fetchData()" id="viewGradesButton">View Grades</button>
+    <button 
+    style="background-color: #007637; color: rgb(174, 247, 128); border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px;"
+    onclick="fetchData()" id="viewGradesButton">View Grades</button>
     <script>
       const button = document.getElementById("viewGradesButton");
       button.addEventListener("click", () => {
@@ -91,7 +93,7 @@
         setTimeout(() => {
           button.innerText = "View Grades";
           button.disabled = false;
-        }, 3000); // Reset after 3 seconds or when fetchData completes
+        }, 6000); // Reset after 6 seconds or when fetchData completes
       });
     </script>
 
