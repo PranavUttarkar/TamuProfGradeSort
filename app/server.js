@@ -29,6 +29,7 @@ app.get("/scrape", async (req, res) => {
 
     const gradesUrl = `https://anex.us/grades/?dept=${dept.toUpperCase()}&number=${number}`;
     const catalogUrl = `https://catalog.tamu.edu/undergraduate/course-descriptions/${dept.toLowerCase()}/`;
+    const catalogUrlGrad = `https://catalog.tamu.edu/graduate/course-descriptions/${dept.toLowerCase()}/`;
 
 
     try {
@@ -66,7 +67,11 @@ app.get("/scrape", async (req, res) => {
 
         // Scrape catalog data
         console.log("Scraping catalog data...");
-        await page.goto(catalogUrl, { waitUntil: "domcontentloaded", timeout: 100000 });
+        if (number <= 500) {
+        await page.goto(catalogUrl, { waitUntil: "domcontentloaded", timeout: 100000 });}
+        else {
+            await page.goto(catalogUrlGrad, { waitUntil: "domcontentloaded", timeout: 100000 });
+        }
         await page.waitForSelector("#sc_sccoursedescs", { timeout: 100000 });
 console.log("Waiting for catalog data to load...");
 page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));

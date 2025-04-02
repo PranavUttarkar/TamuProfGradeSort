@@ -98,11 +98,18 @@
     </script>
 
     <input type="text" id="searchText" placeholder="Search For Professor:" ; />
-    <button onclick="findText()">Find in Table</button>
+    <button onclick="findText(); this.innerText = 'Highlighted in Table'; setTimeout(() => { this.innerText = 'Find in Table'; }, 4000);">
+      Find in Table
+    </button>
     <button
-      onclick="window.open(`https://www.google.com/search?q=${document.getElementById('searchText').value.trim()}+${document.getElementById('dept').value.trim()}+${document.getElementById('number').value.trim()}+tamu+rate+my+professor`)"
+      onclick="
+      
+      window.open(`https://www.google.com/search?q=${document.getElementById('searchText').value.trim()}+${document.getElementById('dept').value.trim()}+${document.getElementById('number').value.trim()}+tamu+rate+my+professor`);
+      "
     >
       Find on Rate My Prof
+    </button>
+    
     </button>
     <button
       onclick="window.open(`https://www.google.com/search?q=${document.getElementById('searchText').value.trim()}+${document.getElementById('dept').value.trim()}+${document.getElementById('number').value.trim()}+tamu+reddit`)"
