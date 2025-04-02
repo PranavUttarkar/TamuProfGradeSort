@@ -36,7 +36,7 @@ app.get("/scrape", async (req, res) => {
         const browser = await puppeteer.launch({
             headless: true,
             args: ['--no-sandbox', '--disable-setuid-sandbox'],
-            timeout: 50000
+            timeout: 90000
         });
 
 
