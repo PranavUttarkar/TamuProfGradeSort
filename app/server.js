@@ -43,7 +43,7 @@ app.get("/scrape", async (req, res) => {
 
 
         // Scrape grades data
-        console.log("Scraping grades data...");
+        console.log("Scraping grades data for ", dept, number);
         await page.goto(gradesUrl, { waitUntil: "domcontentloaded", timeout: 100000 });
         await page.waitForSelector("#dataTable", { timeout: 100000 });
         await page.waitForFunction(() => {
