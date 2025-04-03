@@ -118,7 +118,7 @@ console.log("courseDescription:", catalogData.courseDescription);
         });
     } catch (error) {
         console.error("Error scraping:", error);
-        res.status(500).json({ error: "Failed to scrape data. is the Course Code correct? If buggin Please click the report a bug Button!" });
+        res.status(500).json({ error: "Failed to scrape data. is the Course Code correct? If buggin Please click the report a bug Button! Details: ", error  });
     }
 });
 
