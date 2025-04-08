@@ -47,23 +47,24 @@
         background-color: #ddd;
       }
     </style>
-  </head>
-  <!-- Google tag -->
+    <!-- Google tag -->
   <script
-    async
-    src="https://www.googletagmanager.com/gtag/js?id=G-54S96PXT2Z"
-  ></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {
-      dataLayer.push(arguments);
-    }
-    gtag("js", new Date());
+  async
+  src="https://www.googletagmanager.com/gtag/js?id=G-54S96PXT2Z"
+></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag() {
+    dataLayer.push(arguments);
+  }
+  gtag("js", new Date());
 
-    gtag("config", "G-54S96PXT2Z");
-  </script>
+  gtag("config", "G-54S96PXT2Z");
+</script>
+  </head>
+  
   <body>
-    <h2>Bit.ly/profsort:    TAMU Course Grades & Info!</h2>
+    <h2>Profsort:    TAMU Course Grades & Info!</h2>
     <div
       style="
       display: flex;
@@ -93,7 +94,9 @@
     
     <button 
     style="background-color: #007637; color: rgb(174, 247, 128); border: none; padding: 10px 20px; text-align: center; text-decoration: none; display: inline-block; font-size: 16px; margin: 4px 2px; cursor: pointer; border-radius: 5px;"
-    onclick="fetchData()" id="viewGradesButton">View Grades</button>
+    onclick="if (!this.disabled) { fetchData(); this.disabled = true; setTimeout(() => { this.disabled = false; }, 10000); }" 
+    id="viewGradesButton">View Grades</button>
+    
     <script>
       const button = document.getElementById("viewGradesButton");
       button.addEventListener("click", () => {
