@@ -100,12 +100,12 @@
     <script>
       const button = document.getElementById("viewGradesButton");
       button.addEventListener("click", () => {
-        button.innerText = "Loading...";
+        button.innerText = "Loading Please wait!...";
         button.disabled = true;
         setTimeout(() => {
           button.innerText = "View Grades";
           button.disabled = false;
-        }, 6000); // Reset after 6 seconds or when fetchData completes
+        }, 12000); // Reset after 6 seconds or when fetchData completes
       });
     </script>
 
