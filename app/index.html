@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="./styles.css" />
     <link rel="icon" href="favicon.png" type="image/png" />
 
     <title>Profsort - TAMU Course Grades & Info</title>
     <meta name="description" content="Profsort - Quickly access TAMU course grades, professor info, grade distribution and more. Search by department and course number.">
-    <meta name="keywords" content="Profsort, bitly profsort, TAMU profsort, TAMU course grades, Texas A&M professors, TAMU GPA, TAMU course info">
+    <meta name="keywords" content="Profsort, bitly profsort, TAMU profsort, TAMU course grades, Texas A&M professors, TAMU GPA, TAMU course info, Tamu grade distribution, tamu professor grades">
     <meta name="author" content="Pranav Uttarkar">
     <meta property="og:title" content="bit.ly/profsort - TAMU Course Grades & Info">
     <meta property="og:description" content="Quickly access TAMU course grades, professor info, and more. Search by department and course number.">
@@ -193,65 +193,137 @@
 
         // Create table
         let tableHtml = `
-                      <div style="border: 2px solid #4CAF50; padding: 15px; margin: 20px; border-radius: 10px; background-color: #f9f9f9;">
-                        <h3 style="color: #4CAF50; margin-bottom: 10px;">${data.catalogData.courseDescription}</h3>
-                        <p style="font-size: 16px; color: #555; line-height: 1.5; margin-top: 10px;">
-                           ${data.catalogData.prerequisites}
-                        </p>
-                      </div>
+                <div style="border: 2px solid #4CAF50; padding: 15px; margin: 20px; border-radius: 10px; background-color: #f9f9f9;">
+            <h3 style="color: #4CAF50; margin-bottom: 10px;">${data.catalogData.courseDescription}</h3>
+            <p style="font-size: 16px; color: #555; line-height: 1.5; margin-top: 10px;">
+               ${data.catalogData.prerequisites}
+            </p>
+                </div>
          </br></br>
-             <h5 style="color: #50000; font-size: 18px;"> <strong > Historic  GPA:</strong>
-                        ${(
-                          data.tableData
-                            .slice(1)
-                            .reduce(
-                              (sum, row) => sum + parseFloat(row[3]) || 0,
-                              0
-                            ) /
-                          (data.tableData.length - 1)
-                        ).toFixed(3)}
-                     
-                        <strong>      |   GPA Since 2022:</strong>
-                        ${(
-                          data.tableData
-                            .slice(1)
-                            .filter((row) => parseInt(row[0]) >= 2022)
-                            .reduce(
-                              (sum, row) => sum + parseFloat(row[3]) || 0,
-                              0
-                            ) /
-                          data.tableData
-                            .slice(1)
-                            .filter((row) => parseInt(row[0]) >= 2022).length
-                        ).toFixed(3)}
-                      </h5>
-                              <h4><strong>Click column header to sort<strong></h4><h5>
+             <h5>  Historic  GPA:
+            ${(data.tableData
+              .slice(1)
+              .reduce((sum, row) => sum + parseFloat(row[3]) || 0, 0) /
+              (data.tableData.length - 1)
+            ).toFixed(3)}
+               
+                  |   GPA Since 2022:
+            ${(data.tableData
+              .slice(1)
+              .filter((row) => parseInt(row[0]) >= 2022)
+              .reduce((sum, row) => sum + parseFloat(row[3]) || 0, 0) /
+              data.tableData
+                .slice(1)
+                .filter((row) => parseInt(row[0]) >= 2022).length
+            ).toFixed(3)}
+                </h5>
+                <div style="display: flex; justify-content: center;">
+                  <div>A: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return ((totals[6] / totalSum) * 100).toFixed(2);
+                  })()}% </div>
+                  <div>|   B: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return totalSum > 0 ? ((totals[7] / totalSum) * 100).toFixed(2) : "0.00";
+                  })()}% </div>
+                  <div>|   C: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return totalSum > 0 ? ((totals[8] / totalSum) * 100).toFixed(2) : "0.00";
+                  })()}% </div>
+                  <div>|   D: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return totalSum > 0 ? ((totals[9] / totalSum) * 100).toFixed(2) : "0.00";
+                  })()}% </div>
+                  <div>|   F: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return totalSum > 0 ? ((totals[10] / totalSum) * 100).toFixed(2) : "0.00";
+                  })()}% </div>
+                  <div>|   Q: ${(() => {
+                    const totals = data.tableData.slice(1).reduce(
+                      (acc, row) => {
+                        for (let i = 6; i <= 15; i++) {
+                          acc[i] += parseInt(row[i]) || 0;
+                        }
+                        return acc;
+                      },
+                      Array(16).fill(0)
+                    );
+                    const totalSum = totals.slice(6, 16).reduce((sum, val) => sum + val, 0);
+                    return totalSum > 0 ? ((totals[12] / totalSum) * 100).toFixed(2) : "0.00";
+                  })()}% </div>
+                </div>
+                  <h4>Click column header to sort</h4>
 
-                <table id="sortableTable">
-                    <thead>
-                        <tr>
-                            ${data.tableData[0]
-                              .map(
-                                (cell, index) =>
-                                  `<th onclick="sortTable(${index})">${cell}</th>`
-                              )
-                              .join("")}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${data.tableData
-                          .slice(1)
-                          .map(
-                            (row) =>
-                              `<tr>${row
-                                .map((cell) => `<td>${cell}</td>`)
-                                .join("")}</tr>`
-                          )
-                          .join("")}
-                      </tbody>
-                    </table>
-                   
-                </table>`;
+            <table id="sortableTable" style="width: 90%; margin: 20px auto; border: 1px solid #800000; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);">
+              <thead style="background-color: #007637; color: white; text-transform: uppercase; font-weight: bold;">
+            <tr>
+              ${data.tableData[0]
+                .map(
+              (cell, index) =>
+              `<th onclick="sortTable(${index})" style="padding: 10px; cursor: pointer; border-bottom: 2px solid #ddd;">${cell}</th>`
+                )
+                .join("")}
+            </tr>
+              </thead>
+              <tbody>
+            ${data.tableData
+              .slice(1)
+              .map(
+              (row) =>
+                `<tr>${row
+              .map((cell) => `<td style="padding: 8px; text-align: center; border-bottom: 1px solid #ddd;">${cell}</td>`)
+              .join("")}</tr>`
+              )
+              .join("")}
+                </tbody>
+                </table>
+              `;
+              
 
         outputDiv.innerHTML = tableHtml;
       }
