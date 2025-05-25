@@ -4,8 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app/server.js",
-    "postinstall": "node -e \"if (process.platform === 'linux') { require('child_process').execSync('apt-get update && apt-get install -y libx11-xcb1 libxcomposite1 libxdamage1 libxrandr2 libgbm1 libasound2', {stdio: 'inherit'}); }\""
+    "start": "node app/server.js"
 
   },
   "keywords": [],
