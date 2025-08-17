@@ -1,0 +1,42 @@
+name: Build Windows Artifacts
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+      - name: Install deps
+        run: npm ci
+      - name: Build (no signing)
+        run: |
+          setx WIN_DISABLE_SIGNING true
+          setx CSC_IDENTITY_AUTO_DISCOVERY false
+          npm run build:app
+      - name: Upload installer
+        uses: actions/upload-artifact@v4
+        with:
+          name: profsort-installer
+          path: dist/*Setup*.exe
+      - name: Upload portable
+        uses: actions/upload-artifact@v4
+        with:
+          name: profsort-portable
+          path: dist/*Portable*.exe
+      # - name: Create Release (optional)
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: |
+      #       dist/*Setup*.exe
+      #       dist/*Portable*.exe
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

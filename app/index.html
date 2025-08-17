@@ -131,6 +131,13 @@
 <br></br>
 
     <div id="output"></div>
+    <div id="loadingOverlay" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(255,255,255,0.85); z-index:9999; align-items:center; justify-content:center; flex-direction:column;">
+      <div style="font-size:20px; margin-bottom:12px; color:#007637;">Scraping... please wait</div>
+      <div style="width:60px; height:60px; border:6px solid #cde7d3; border-top:6px solid #007637; border-radius:50%; animation:spin 1s linear infinite;"></div>
+    </div>
+    <style>
+      @keyframes spin { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
+    </style>
     <script>
       function findText() {
         const searchText = document
@@ -179,8 +186,22 @@
           return;
         }
 
-        const response = await fetch(`/scrape?dept=${dept}&number=${number}`);
-        const data = await response.json();
+        const overlay = document.getElementById("loadingOverlay");
+        overlay.style.display = 'flex';
+        let data;
+        try {
+          if (window.api && typeof window.api.scrape === 'function') {
+            data = await window.api.scrape(dept, number);
+          } else {
+            const response = await fetch(`/scrape?dept=${dept}&number=${number}`);
+            data = await response.json();
+          }
+        } catch (err) {
+          const outputDiv = document.getElementById("output");
+          outputDiv.innerHTML = `<p style=\"color:red;\">${err.message}</p>`;
+          overlay.style.display = 'none';
+          return;
+        }
 
         const outputDiv = document.getElementById("output");
         outputDiv.innerHTML = ""; // Clear previous results
@@ -325,7 +346,8 @@
               `;
               
 
-        outputDiv.innerHTML = tableHtml;
+  outputDiv.innerHTML = tableHtml;
+  overlay.style.display = 'none';
       }
 
       function sortTable(columnIndex) {

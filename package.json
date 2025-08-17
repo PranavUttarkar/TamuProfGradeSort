@@ -1,20 +1,59 @@
 {
   "name": "prof-grade-view-and-sorting",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "electron/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node app/server.js"
-
+    "start": "node app/server.js",
+    "dev": "electron .",
+  "build:app": "electron-builder --win --x64",
+  "build:portable": "electron-builder --win portable --x64",
+  "build:dir": "electron-builder --dir",
+  "build:app:nosign": "powershell -NoProfile -Command \"$env:WIN_DISABLE_SIGNING='true'; $env:CSC_IDENTITY_AUTO_DISCOVERY='false'; npm run build:app\""
   },
-  "keywords": [],
+  "keywords": ["tamu","grades","electron","education","sorting"],
   "author": "Pranav Uttarkar",
   "license": "ISC",
   "type": "commonjs",
-  "description": "",
+  "description": "Desktop & web app to view, analyze, and sort TAMU course grade distributions with catalog details.",
+  "homepage": "https://github.com/PranavUttarkar/TamuProfGradeSort",
+  "repository": { "type": "git", "url": "https://github.com/PranavUttarkar/TamuProfGradeSort.git" },
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "puppeteer": "^24.1.1"
+  },
+  "devDependencies": {
+    "electron": "^31.2.0",
+    "electron-builder": "^24.13.3"
+  },
+  "build": {
+    "appId": "com.profsort.app",
+    "productName": "ProfSort",
+    "files": [
+      "app/**/*",
+      "electron/**/*",
+      "package.json"
+    ],
+  "artifactName": "ProfSort-${version}-${target}.${ext}",
+    "asar": true,
+    "directories": {
+      "buildResources": "build"
+    },
+    "win": {
+      "target": ["nsis", "portable"],
+      "icon": "app/favicon.png",
+      "signAndEditExecutable": false
+    },
+    "nsis": {
+      "oneClick": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "ProfSort",
+      "deleteAppDataOnUninstall": false,
+      "perMachine": false,
+      "allowElevation": false,
+      "allowToChangeInstallationDirectory": false
+    }
   }
 }
