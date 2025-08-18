@@ -301,7 +301,7 @@
           <a
             id="download-primary"
             class="dl-primary"
-            href="https://github.com/PranavUttarkar/TamuProfGradeSort/releases/latest"
+            href="https://github.com/PranavUttarkar/TamuProfGradeSort/releases/download/Main/ProfSort.Setup.1.0.0.exe"
             target="_blank"
             rel="noopener"
             download
@@ -393,34 +393,23 @@
         const errDiv = document.getElementById("error");
         const hashDiv = document.getElementById("hash");
         try {
+          // Use specific tag 'Main' for release info without altering primary static installer link.
           const res = await fetch(
-            `https://api.github.com/repos/${owner}/${repo}/releases/latest`
+            `https://api.github.com/repos/${owner}/${repo}/releases/tags/Main`
           );
-          if (!res.ok) throw new Error("GitHub API error");
-          const data = await res.json();
-          const assets = data.assets || [];
-          // Match new artifact naming: ProfSort-<version>-nsis.exe and ProfSort-<version>-portable.exe
-          const installer =
-            assets.find((a) => /-nsis\.exe$/i.test(a.name)) ||
-            assets.find((a) => /Setup/i.test(a.name));
-          const portable =
-            assets.find((a) => /-portable\.exe$/i.test(a.name)) ||
-            assets.find((a) => /Portable/i.test(a.name));
-          if (installer) {
-            primaryBtn.href = installer.browser_download_url;
-            primaryBtn.setAttribute("download", installer.name);
+          if (res.ok) {
+            const data = await res.json();
+            const assets = data.assets || [];
+            const portable = assets.find((a) => /Portable/i.test(a.name));
+            if (portable) portableLink.href = portable.browser_download_url;
+            versionDiv.textContent = data.tag_name
+              ? `Release ${data.tag_name}`
+              : "Release Main";
+          } else {
+            versionDiv.textContent = "Release Main";
           }
-          if (portable) {
-            portableLink.href = portable.browser_download_url;
-          }
-          versionDiv.textContent = data.tag_name
-            ? `Latest Version ${data.tag_name}`
-            : "Latest build ready";
-        } catch (e) {
-          errDiv.textContent =
-            "Could not auto-load latest release. Using fallback links.";
-          errDiv.classList.remove("hidden");
-          versionDiv.textContent = "Latest release (fallback)";
+        } catch (_) {
+          versionDiv.textContent = "Release Main";
         }
       })();
     </script>
