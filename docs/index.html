@@ -11,20 +11,17 @@
     <link rel="icon" href="../app/favicon.png" />
     <style>
       :root {
-        --bg: #05060a;
-        --accent: #17f59f;
-        --accent-glow: 160 100% 50%;
-        --text-dim: #8b94a7;
-        --grad: radial-gradient(
-            circle at 20% 20%,
-            rgba(45, 255, 179, 0.25),
-            transparent 60%
-          ),
-          radial-gradient(
-            circle at 80% 70%,
-            rgba(80, 130, 255, 0.18),
-            transparent 65%
-          );
+        /* User requested maroon #50000 (5 hex digits) – assuming intended #500000 */
+        --bg: #ffffff;
+        --bg-alt: #faf8f9;
+        --accent: #500000;
+        --accent-rgb: 80 0 0;
+        --accent-soft: #7a1a1a;
+        --text: #1d1f21;
+        --text-dim: #4e5257;
+        --border: #e4e3e3;
+        --radius-lg: 26px;
+        --radius-md: 16px;
       }
       * {
         box-sizing: border-box;
@@ -33,83 +30,93 @@
         margin: 0;
         font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu,
           sans-serif;
-        background: var(--bg);
-        color: #e7edf4;
+        background: linear-gradient(180deg, #ffffff, #fffafa 65%);
+        color: var(--text);
         min-height: 100vh;
         display: flex;
         flex-direction: column;
+        -webkit-font-smoothing: antialiased;
       }
       .hero {
         position: relative;
-        padding: clamp(3rem, 6vw, 6rem) clamp(1.5rem, 5vw, 5rem) 3rem;
+        padding: clamp(3rem, 6vw, 5.5rem) clamp(1.2rem, 5vw, 4.5rem) 3rem;
         flex: 1;
-        background: var(--grad);
+        background: radial-gradient(
+            circle at 18% 22%,
+            rgba(80, 0, 0, 0.09),
+            transparent 60%
+          ),
+          radial-gradient(
+            circle at 82% 68%,
+            rgba(120, 0, 0, 0.07),
+            transparent 65%
+          );
         overflow: hidden;
       }
       h1 {
-        font-size: clamp(2.8rem, 7vw, 4.2rem);
+        font-size: clamp(2.7rem, 7vw, 4rem);
         line-height: 1.05;
         margin: 0 0 1rem;
         background: linear-gradient(
-          110deg,
-          #18ffaa 0%,
-          #56b6ff 55%,
-          #9f6bff 100%
+          95deg,
+          var(--accent) 0%,
+          #7c0c0c 65%,
+          #a42a2a 100%
         );
         -webkit-background-clip: text;
         background-clip: text;
         color: transparent;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
       }
       .tagline {
-        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        font-size: clamp(1.02rem, 1.45vw, 1.23rem);
         max-width: 780px;
         line-height: 1.5;
-        margin: 0 0 2.2rem;
+        margin: 0 0 2rem;
         color: var(--text-dim);
       }
       .glass {
-        backdrop-filter: blur(22px) saturate(160%);
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 26px;
-        padding: 2.2rem clamp(1.5rem, 3vw, 2.8rem);
+        background: #ffffffdd;
+        backdrop-filter: blur(8px);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-lg);
+        padding: 2.1rem clamp(1.4rem, 3vw, 2.6rem) 2.4rem;
         position: relative;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.04),
-          0 4px 18px -4px rgba(0, 0, 0, 0.65),
-          0 0 22px -4px rgba(40, 255, 190, 0.25);
+        box-shadow: 0 2px 10px rgba(25, 0, 0, 0.06),
+          0 4px 28px -6px rgba(80, 0, 0, 0.12);
         max-width: 1040px;
       }
       .dl-primary {
-        --btn-accent: var(--accent);
         cursor: pointer;
         outline: none;
-        border: none;
+        border: 1px solid var(--accent);
         position: relative;
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         font-weight: 600;
-        padding: 1.15rem 2.4rem;
+        padding: 0.95rem 2rem 0.98rem;
         border-radius: 14px;
-        color: #021512;
-        background: linear-gradient(120deg, #23ffb5, #49c2ff, #a470ff);
-        background-size: 180% 180%;
-        animation: flow 6s linear infinite;
-        box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.1),
-          0 10px 24px -6px rgba(80, 230, 190, 0.35);
+        color: #fff;
+        background: linear-gradient(120deg, var(--accent) 0%, #7a1212 70%);
+        box-shadow: 0 4px 14px -4px rgba(80, 0, 0, 0.4);
         display: inline-flex;
         align-items: center;
         gap: 0.65rem;
         text-decoration: none;
+        transition: background 0.3s, transform 0.15s;
       }
       .dl-primary:hover {
-        filter: brightness(1.08);
+        filter: brightness(1.04);
+      }
+      .dl-primary:active {
+        transform: translateY(1px);
       }
       .dl-secondary {
-        margin-left: 1.1rem;
-        font-size: 0.95rem;
+        margin-left: 1rem;
+        font-size: 0.85rem;
         color: var(--accent);
         text-decoration: none;
         position: relative;
+        font-weight: 600;
       }
       .dl-secondary:after {
         content: "";
@@ -119,164 +126,82 @@
         width: 100%;
         height: 1px;
         background: linear-gradient(90deg, var(--accent), transparent);
-        opacity: 0.6;
+        opacity: 0.5;
       }
       .features {
-        margin: 3.5rem 0 0;
+        margin: 3rem 0 0;
         display: grid;
-        gap: 1.6rem;
+        gap: 1.4rem;
         grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
       }
       .feat {
-        padding: 1.1rem 1rem 1rem;
-        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 1rem 1rem 0.95rem;
+        border: 1px solid #e8e5e5;
         border-radius: 18px;
-        background: linear-gradient(
-          150deg,
-          rgba(255, 255, 255, 0.05),
-          rgba(255, 255, 255, 0.01)
-        );
+        background: linear-gradient(150deg, #ffffff, #fff5f5 70%);
         position: relative;
         overflow: hidden;
       }
-      .feat:before {
-        content: "";
-        position: absolute;
-        inset: -1px;
-        background: linear-gradient(
-          140deg,
-          rgba(40, 255, 185, 0.35),
-          rgba(70, 130, 255, 0)
-        );
-        opacity: 0.18;
-        pointer-events: none;
-      }
       .feat h3 {
         margin: 0.2rem 0 0.55rem;
-        font-size: 1.05rem;
-        letter-spacing: 0.5px;
-        background: linear-gradient(90deg, #5dffe0, #83a6ff);
-        -webkit-background-clip: text;
-        background-clip: text;
-        color: transparent;
+        font-size: 1rem;
+        letter-spacing: 0.4px;
+        color: var(--accent);
       }
       .feat p {
         margin: 0;
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         line-height: 1.35;
-        color: #b1bbcc;
+        color: #55595e;
       }
       .version {
-        font-size: 0.75rem;
-        letter-spacing: 0.8px;
-        font-weight: 500;
+        font-size: 0.68rem;
+        letter-spacing: 0.75px;
+        font-weight: 600;
         text-transform: uppercase;
-        color: #5cc9ff;
-        margin-top: 1.25rem;
-        opacity: 0.85;
+        color: var(--accent);
+        margin-top: 1rem;
+        opacity: 0.9;
       }
       footer {
         text-align: center;
-        font-size: 0.7rem;
+        font-size: 0.68rem;
         letter-spacing: 0.5px;
-        padding: 2.8rem 0 1.4rem;
-        color: #5c6575;
+        padding: 2.8rem 0 1.6rem;
+        color: #6a6d70;
       }
-      .grid-bg {
-        position: absolute;
-        inset: 0;
-        background-image: linear-gradient(
-            rgba(255, 255, 255, 0.04) 1px,
-            transparent 0
-          ),
-          linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 0);
-        background-size: 46px 46px;
-        mask: radial-gradient(circle at 50% 45%, #000 70%, transparent 100%);
-        opacity: 0.35;
-        pointer-events: none;
-      }
-      .pulse {
-        position: absolute;
-        width: 400px;
-        height: 400px;
-        background: radial-gradient(
-          circle at 50% 50%,
-          rgba(40, 255, 190, 0.55),
-          transparent 70%
-        );
-        top: -120px;
-        right: -80px;
-        filter: blur(40px);
-        opacity: 0.4;
-        mix-blend-mode: screen;
-        animation: drift 14s ease-in-out infinite alternate;
-        pointer-events: none;
-      }
+      .grid-bg,
+      .pulse,
       .pulse2 {
-        position: absolute;
-        width: 380px;
-        height: 380px;
-        background: radial-gradient(
-          circle at 50% 50%,
-          rgba(120, 90, 255, 0.55),
-          transparent 70%
-        );
-        bottom: -140px;
-        left: -60px;
-        filter: blur(50px);
-        opacity: 0.35;
-        mix-blend-mode: screen;
-        animation: drift2 18s ease-in-out infinite alternate;
-        pointer-events: none;
-      }
-      @keyframes drift {
-        to {
-          transform: translate(-40px, 25px) scale(1.15);
-        }
-      }
-      @keyframes drift2 {
-        to {
-          transform: translate(50px, -30px) scale(1.1);
-        }
-      }
-      @keyframes flow {
-        0% {
-          background-position: 0% 50%;
-        }
-        50% {
-          background-position: 100% 50%;
-        }
-        100% {
-          background-position: 0% 50%;
-        }
+        display: none;
       }
       .hidden {
         display: none !important;
       }
       .mini-note {
-        font-size: 0.63rem;
-        margin-top: 0.75rem;
-        color: #6b7688;
+        font-size: 0.6rem;
+        margin-top: 0.9rem;
+        color: #7d7f83;
       }
       .error {
-        color: #ff8c8c;
-        font-size: 0.75rem;
-        margin-top: 1rem;
+        color: #b80000;
+        font-size: 0.7rem;
+        margin-top: 0.85rem;
       }
       .hash {
-        font-size: 0.6rem;
+        font-size: 0.55rem;
         font-family: ui-monospace, Consolas, monospace;
         margin-top: 0.5rem;
-        color: #6f7c90;
+        color: #6f6f72;
         word-break: break-all;
       }
       @media (max-width: 760px) {
         .dl-secondary {
           display: block;
-          margin: 0.9rem 0 0;
+          margin: 0.7rem 0 0;
         }
         .glass {
-          padding: 1.9rem 1.35rem 2.4rem;
+          padding: 1.8rem 1.2rem 2.2rem;
         }
         .features {
           grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
@@ -286,9 +211,7 @@
   </head>
   <body>
     <main class="hero">
-      <div class="grid-bg"></div>
-      <div class="pulse"></div>
-      <div class="pulse2"></div>
+      <!-- Decorative dark-mode glow elements removed for light theme -->
       <section class="glass">
         <h1>ProfSort</h1>
         <p class="tagline">
@@ -311,7 +234,7 @@
               width="18"
               height="18"
               fill="none"
-              stroke="#021512"
+              stroke="#ffffff"
               stroke-width="2"
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -333,6 +256,94 @@
         <div class="version" id="version">Fetching latest release…</div>
         <div id="hash" class="hash hidden"></div>
         <div id="error" class="error hidden"></div>
+
+        <!-- SmartScreen Notice moved directly under download section for prominence -->
+        <div
+          style="
+            margin-top: 1.4rem;
+            padding: 0.95rem 1rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: #fff6f6;
+          "
+        >
+          <h3
+            style="
+              margin: 0 0 0.55rem;
+              font-size: 0.95rem;
+              letter-spacing: 0.5px;
+              color: var(--accent);
+            "
+          >
+            Windows SmartScreen Notice
+          </h3>
+          <p
+            style="
+              margin: 0.35rem 0 0.65rem;
+              font-size: 0.68rem;
+              line-height: 1.32;
+              color: #5a5d61;
+            "
+          >
+            Installer is <strong>unsigned</strong> (chose not to purchase a code
+            signing certificate yet to keep it free) and from a
+            <strong>new publisher</strong>, so Windows may show:
+            <em>“Windows protected your PC…”</em>
+          </p>
+          <ol
+            style="
+              margin: 0 0 0.7rem 0.95rem;
+              padding: 0;
+              font-size: 0.63rem;
+              line-height: 1.25;
+              color: #5c5f63;
+            "
+          >
+            <li>Click <strong>More info</strong>.</li>
+            <li>Confirm publisher = Unknown (expected).</li>
+            <li>Click <strong>Run anyway</strong>.</li>
+          </ol>
+          <p style="margin: 0 0 0.45rem; font-size: 0.6rem; color: #6a6d70">
+            Optional: Right‑click installer → Properties → check
+            <strong>Unblock</strong>.
+          </p>
+          <details style="margin-top: 0.25rem">
+            <summary
+              style="cursor: pointer; font-size: 0.6rem; color: var(--accent)"
+            >
+              Verify integrity (SHA256)
+            </summary>
+            <pre
+              style="
+                margin: 0.45rem 0 0;
+                padding: 0.55rem 0.65rem;
+                background: #fbf1f1;
+                border: 1px solid #ead4d4;
+                border-radius: 10px;
+                font-size: 0.55rem;
+                color: #5a1f1f;
+                overflow: auto;
+              "
+            >
+# PowerShell
+Get-FileHash .\ProfSort.Setup.1.0.0.exe -Algorithm SHA256</pre
+            >
+            <p style="margin: 0.35rem 0 0; font-size: 0.55rem; color: #6a3131">
+              Compare with hash on release page.
+            </p>
+          </details>
+          <p
+            style="
+              margin: 0.55rem 0 0;
+              font-size: 0.56rem;
+              letter-spacing: 0.3px;
+              color: #7a1f1f;
+            "
+          >
+            Planned: future signed builds to remove warning.
+          </p>
+        </div>
+
         <div class="features">
           <div class="feat">
             <h3>Smart Summaries</h3>
@@ -369,110 +380,16 @@
         </div>
         <p class="mini-note">
           Not affiliated with Texas A&M University. Data pulled from public
-          sources. First launch may download Chromium.
+          sources. First launch may download Chromium. Requires an installed
+          copy of
+          <strong>Google Chrome</strong> for best scraping reliability.
         </p>
-        <div
-          style="
-            margin-top: 1.8rem;
-            padding: 1rem 1.1rem 1rem;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 16px;
-            background: linear-gradient(
-              135deg,
-              rgba(255, 255, 255, 0.05),
-              rgba(255, 255, 255, 0.02)
-            );
-          "
-        >
-          <h3
-            style="
-              margin: 0 0 0.55rem;
-              font-size: 1rem;
-              letter-spacing: 0.5px;
-              background: linear-gradient(90deg, #ffb86c, #ff6b6b);
-              -webkit-background-clip: text;
-              background-clip: text;
-              color: transparent;
-            "
-          >
-            Windows SmartScreen Notice
-          </h3>
-          <p
-            style="
-              margin: 0.4rem 0 0.75rem;
-              font-size: 0.75rem;
-              line-height: 1.35;
-              color: #c7d0dd;
-            "
-          >
-            Because this installer is <strong>not yet code-signed</strong> (I
-            chose not to buy a certificate yet to keep the project free) and is
-            a <strong>new publisher</strong>, Windows may display:<br />
-            <em
-              >“Windows protected your PC – Microsoft Defender SmartScreen
-              prevented an unrecognized app from starting.”</em
-            >
-          </p>
-          <ol
-            style="
-              margin: 0 0 0.8rem 0.95rem;
-              padding: 0;
-              font-size: 0.7rem;
-              line-height: 1.25;
-              color: #b5beca;
-            "
-          >
-            <li>Click <strong>More info</strong>.</li>
-            <li>
-              Verify publisher shows as <em>Unknown</em> (expected for unsigned
-              build).
-            </li>
-            <li>Click <strong>Run anyway</strong> to launch ProfSort.</li>
-          </ol>
-          <p style="margin: 0 0 0.55rem; font-size: 0.7rem; color: #a8b2c0">
-            Alternative (no prompt next time): Right‑click the downloaded file →
-            Properties → check <strong>Unblock</strong> → OK.
-          </p>
-          <details style="margin-top: 0.4rem">
-            <summary style="cursor: pointer; font-size: 0.7rem; color: #5cc9ff">
-              Optional: Verify integrity (SHA256)
-            </summary>
-            <pre
-              style="
-                margin: 0.55rem 0 0;
-                padding: 0.6rem 0.75rem;
-                background: #0d1117;
-                border: 1px solid #1f242d;
-                border-radius: 10px;
-                font-size: 0.6rem;
-                color: #9fb0c3;
-                overflow: auto;
-              "
-            >
-# PowerShell
-Get-FileHash .\ProfSort.Setup.1.0.0.exe -Algorithm SHA256</pre
-            >
-            <p style="margin: 0.45rem 0 0; font-size: 0.6rem; color: #7d8896">
-              Compare the hash with the value published on the release page.
-            </p>
-          </details>
-          <p
-            style="
-              margin: 0.75rem 0 0;
-              font-size: 0.62rem;
-              letter-spacing: 0.3px;
-              color: #82909f;
-            "
-          >
-            Planned: future signed builds to remove most warnings.
-          </p>
-        </div>
       </section>
     </main>
     <footer>
       Built by Pranav Uttarkar ·
       <a
-        style="color: #5cc9ff"
+        style="color: var(--accent); text-decoration: none; font-weight: 600"
         href="https://github.com/PranavUttarkar/TamuProfGradeSort"
         target="_blank"
         rel="noopener"
@@ -483,13 +400,11 @@ Get-FileHash .\ProfSort.Setup.1.0.0.exe -Algorithm SHA256</pre
       (async function () {
         const owner = "PranavUttarkar";
         const repo = "TamuProfGradeSort";
-        const primaryBtn = document.getElementById("download-primary");
         const portableLink = document.getElementById("download-portable");
         const versionDiv = document.getElementById("version");
         const errDiv = document.getElementById("error");
         const hashDiv = document.getElementById("hash");
         try {
-          // Use specific tag 'Main' for release info without altering primary static installer link.
           const res = await fetch(
             `https://api.github.com/repos/${owner}/${repo}/releases/tags/Main`
           );
