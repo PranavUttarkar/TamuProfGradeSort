@@ -257,29 +257,26 @@
         };
       }
 
-      function renderChart(ctx, dist) {
-        const width = ctx.canvas.width;
-        const height = ctx.canvas.height;
-        const g = ctx;
-        g.clearRect(0, 0, width, height);
-        const padding = 20;
-        const barW = Math.min(
-          90,
-          (width - padding * 2) / dist.values.length - 18
-        );
-        const max = Math.max(1, Math.ceil(Math.max(...dist.values)));
-        g.font = "12px system-ui";
-        dist.values.forEach((v, i) => {
-          const x = padding + i * (barW + 18) + 10;
-          const h = (height - 70) * (v / max);
-          const y = height - 40 - h;
-          g.fillStyle = i < 3 ? "#007637" : i === 5 ? "#b23a48" : "#8c8c8c";
-          g.fillRect(x, y, barW, h);
-          g.fillStyle = "#333";
-          g.fillText(dist.labels[i], x + barW / 2 - 4, height - 20);
-          g.fillStyle = "#1a1a1a";
-          g.fillText(v.toFixed(1) + "%", x + 2, y - 6);
-        });
+      // small helper: fetch JSON with a retry attempt (attempts = total tries)
+      async function fetchWithRetry(url, attempts = 2, delayMs = 800) {
+        let lastErr = null;
+        for (let i = 0; i < attempts; i++) {
+          try {
+            const resp = await fetch(url);
+            const data = await resp.json();
+            if (!resp.ok || data.error)
+              throw new Error(data.error || `HTTP ${resp.status}`);
+            return data;
+          } catch (err) {
+            lastErr = err;
+            if (i < attempts - 1) {
+              // show a lightweight retry toast and wait a moment
+              showToast("Fetch failed, retrying...", "info");
+              await new Promise((r) => setTimeout(r, delayMs));
+            }
+          }
+        }
+        throw lastErr;
       }
 
       function buildLinks(dept, number, profQuery) {
@@ -298,6 +295,39 @@
               base + " reddit"
             )}`
           );
+      }
+
+      function renderChart(ctx, dist) {
+        const width = ctx.canvas.width;
+        const height = ctx.canvas.height;
+        ctx.clearRect(0, 0, width, height);
+        const padding = 20;
+        const gap = 18;
+        const barW = Math.min(
+          90,
+          (width - padding * 2) / dist.values.length - gap
+        );
+        const max = Math.max(1, Math.ceil(Math.max(...dist.values)));
+        ctx.font = "12px system-ui";
+        dist.values.forEach((v, i) => {
+          const x = padding + i * (barW + gap) + 10;
+          const h = (height - 70) * (v / max);
+          const y = height - 40 - h;
+          // color: maroon for A/B/C, gray for D/F, muted red for Q
+          const fills = [
+            "#7a1a1a",
+            "#8b2a2a",
+            "#9e3a3a",
+            "#8c8c8c",
+            "#6f6f6f",
+            "#b23a48",
+          ];
+          ctx.fillStyle = fills[i] || "#7a1a1a";
+          ctx.fillRect(x, y, barW, h);
+          ctx.fillStyle = "rgba(0,0,0,0.6)";
+          ctx.fillText(dist.labels[i], x + barW / 2 - 6, height - 20);
+          ctx.fillText(v.toFixed(1) + "%", x + 2, y - 6);
+        });
       }
 
       function renderTable(data) {
@@ -367,14 +397,10 @@
         tableHead.innerHTML = "";
         tableBody.innerHTML = "";
         try {
-          const resp = await fetch(
-            `/api/scrape?dept=${encodeURIComponent(
-              dept
-            )}&number=${encodeURIComponent(number)}`
-          );
-          const data = await resp.json();
-          if (!resp.ok || data.error)
-            throw new Error(data.error || "Failed to fetch");
+          const url = `/api/scrape?dept=${encodeURIComponent(
+            dept
+          )}&number=${encodeURIComponent(number)}`;
+          const data = await fetchWithRetry(url, 2, 900);
           lastData = data;
           courseTitle.textContent =
             data.catalogData.courseDescription || `${dept} ${number}`;
