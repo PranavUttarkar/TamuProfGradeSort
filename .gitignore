@@ -9,3 +9,4 @@ npm-debug.log
 latest.yml
 builder-debug.yml
 builder-effective-config.yaml
+.vercel

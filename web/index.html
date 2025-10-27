@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="../app/favicon.png" type="image/png" />
+    <title>ProfSort Web – TAMU Course Grades & Info</title>
+    <meta
+      name="description"
+      content="ProfSort Web – Quickly access TAMU course grades, professor info, grade distribution and more with serverless API."
+    />
+    <meta
+      name="keywords"
+      content="Profsort, TAMU grades, Texas A&M professors, grade distribution, web"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container header-inner">
+        <div class="brand">
+          <img src="../app/favicon.png" alt="ProfSort" class="logo" />
+          <span>ProfSort</span>
+        </div>
+        <div class="header-actions">
+          <button id="themeToggle" class="btn btn-ghost" title="Toggle theme">
+            🌙
+          </button>
+          <a href="../docs/" class="btn btn-link">Download App</a>
+        </div>
+      </div>
+    </header>
+
+    <main class="container">
+      <section class="search-card card">
+        <div class="search-grid">
+          <div class="field">
+            <label for="dept">Department</label>
+            <input
+              type="text"
+              id="dept"
+              placeholder="e.g., CSCE"
+              maxlength="8"
+              autocomplete="off"
+            />
+          </div>
+          <div class="field">
+            <label for="number">Course Number</label>
+            <input
+              type="text"
+              id="number"
+              placeholder="e.g., 221"
+              maxlength="8"
+              autocomplete="off"
+            />
+          </div>
+          <div class="actions">
+            <button class="btn btn-primary" id="viewGradesButton">
+              View Grades
+            </button>
+            <button class="btn" id="copyLinkBtn" title="Copy shareable link">
+              Copy Link
+            </button>
+            <button class="btn" id="exportCsvBtn" title="Export table as CSV">
+              Export CSV
+            </button>
+          </div>
+        </div>
+        <div id="recent" class="recent hidden">
+          <div class="recent-title">Recent searches</div>
+          <div id="recentList" class="chip-row"></div>
+        </div>
+      </section>
+
+      <section id="resultCard" class="card hidden">
+        <div class="result-header">
+          <div>
+            <h3 id="courseTitle">Course</h3>
+            <div id="prereq" class="prereq"></div>
+          </div>
+          <div class="summary">
+            <div class="kpi">
+              <div class="kpi-label">Historic GPA</div>
+              <div class="kpi-value" id="gpaHistoric">–</div>
+            </div>
+            <div class="divider"></div>
+            <div class="kpi">
+              <div class="kpi-label">Since 2022</div>
+              <div class="kpi-value" id="gpaRecent">–</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="chart-row">
+          <canvas
+            id="distChart"
+            width="640"
+            height="200"
+            aria-label="Grade distribution"
+          ></canvas>
+          <div class="ext-links">
+            <div class="field small">
+              <label for="searchText">Professor filter</label>
+              <input
+                type="text"
+                id="searchText"
+                placeholder="Type to filter rows…"
+              />
+            </div>
+            <button class="btn" id="rmpBtn">Rate My Prof</button>
+            <button class="btn" id="redditBtn">Reddit</button>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table id="sortableTable" class="table">
+            <thead id="tableHead"></thead>
+            <tbody id="tableBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+
+    <div id="toast" class="toast hidden"></div>
+    <div id="loadingOverlay" class="overlay hidden">
+      <div class="spinner"></div>
+      <div class="overlay-text">Fetching… please wait</div>
+    </div>
+
+    <footer class="footer">
+      <div class="container">
+        <p>
+          This site isn’t affiliated with Texas A&M University. Data is pulled
+          from public sources on request.
+        </p>
+      </div>
+    </footer>
+
+    <script>
+      // DOM refs
+      const deptEl = document.getElementById("dept");
+      const numberEl = document.getElementById("number");
+      const viewBtn = document.getElementById("viewGradesButton");
+      const copyLinkBtn = document.getElementById("copyLinkBtn");
+      const exportCsvBtn = document.getElementById("exportCsvBtn");
+      const searchTextEl = document.getElementById("searchText");
+      const rmpBtn = document.getElementById("rmpBtn");
+      const redditBtn = document.getElementById("redditBtn");
+      const resultCard = document.getElementById("resultCard");
+      const courseTitle = document.getElementById("courseTitle");
+      const prereq = document.getElementById("prereq");
+      const gpaHistoricEl = document.getElementById("gpaHistoric");
+      const gpaRecentEl = document.getElementById("gpaRecent");
+      const tableHead = document.getElementById("tableHead");
+      const tableBody = document.getElementById("tableBody");
+      const toast = document.getElementById("toast");
+      const overlay = document.getElementById("loadingOverlay");
+      const themeToggle = document.getElementById("themeToggle");
+      const recent = document.getElementById("recent");
+      const recentList = document.getElementById("recentList");
+
+      let lastData = null;
+
+      function showToast(msg, type = "info") {
+        toast.textContent = msg;
+        toast.className = "toast " + type;
+        setTimeout(() => toast.classList.add("show"), 0);
+        setTimeout(() => toast.classList.remove("show"), 2800);
+      }
+
+      function setLoading(loading) {
+        overlay.classList.toggle("hidden", !loading);
+        if (loading) overlay.classList.remove("hidden");
+      }
+
+      function saveRecent(dept, number) {
+        try {
+          const key = "recentSearches";
+          const arr = JSON.parse(localStorage.getItem(key) || "[]");
+          const item = { dept, number };
+          const filtered = arr.filter(
+            (x) => !(x.dept === dept && x.number === number)
+          );
+          filtered.unshift(item);
+          localStorage.setItem(key, JSON.stringify(filtered.slice(0, 8)));
+        } catch (_) {}
+      }
+
+      function loadRecent() {
+        try {
+          const arr = JSON.parse(
+            localStorage.getItem("recentSearches") || "[]"
+          );
+          recentList.innerHTML = "";
+          if (!arr.length) {
+            recent.classList.add("hidden");
+            return;
+          }
+          recent.classList.remove("hidden");
+          arr.forEach(({ dept, number }) => {
+            const chip = document.createElement("button");
+            chip.className = "chip";
+            chip.textContent = `${dept} ${number}`;
+            chip.onclick = () => {
+              deptEl.value = dept;
+              numberEl.value = number;
+              fetchData();
+            };
+            recentList.appendChild(chip);
+          });
+        } catch (_) {}
+      }
+
+      function toCSV(tableData) {
+        return tableData
+          .map((row) =>
+            row
+              .map((cell) => {
+                const c = String(cell ?? "");
+                return /[",\n]/.test(c) ? '"' + c.replace(/"/g, '""') + '"' : c;
+              })
+              .join(",")
+          )
+          .join("\n");
+      }
+
+      function download(filename, text) {
+        const blob = new Blob([text], { type: "text/csv;charset=utf-8;" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+        URL.revokeObjectURL(link.href);
+      }
+
+      function updateShareLink() {
+        const dept = deptEl.value.trim();
+        const number = numberEl.value.trim();
+        const url = new URL(window.location.href);
+        if (dept) url.searchParams.set("dept", dept);
+        if (number) url.searchParams.set("number", number);
+        history.replaceState(null, "", url.toString());
+      }
+
+      function computeDistribution(tableData) {
+        const totals = tableData.slice(1).reduce((acc, row) => {
+          for (let i = 6; i <= 15; i++) acc[i] += parseInt(row[i]) || 0;
+          return acc;
+        }, Array(16).fill(0));
+        const totalSum = totals.slice(6, 16).reduce((s, v) => s + v, 0);
+        function pct(idx) {
+          return totalSum > 0 ? (totals[idx] / totalSum) * 100 : 0;
+        }
+        return {
+          labels: ["A", "B", "C", "D", "F", "Q"],
+          values: [pct(6), pct(7), pct(8), pct(9), pct(10), pct(12)],
+        };
+      }
+
+      function renderChart(ctx, dist) {
+        const width = ctx.canvas.width;
+        const height = ctx.canvas.height;
+        const g = ctx;
+        g.clearRect(0, 0, width, height);
+        const padding = 20;
+        const barW = Math.min(
+          90,
+          (width - padding * 2) / dist.values.length - 18
+        );
+        const max = Math.max(1, Math.ceil(Math.max(...dist.values)));
+        g.font = "12px system-ui";
+        dist.values.forEach((v, i) => {
+          const x = padding + i * (barW + 18) + 10;
+          const h = (height - 70) * (v / max);
+          const y = height - 40 - h;
+          g.fillStyle = i < 3 ? "#007637" : i === 5 ? "#b23a48" : "#8c8c8c";
+          g.fillRect(x, y, barW, h);
+          g.fillStyle = "#333";
+          g.fillText(dist.labels[i], x + barW / 2 - 4, height - 20);
+          g.fillStyle = "#1a1a1a";
+          g.fillText(v.toFixed(1) + "%", x + 2, y - 6);
+        });
+      }
+
+      function buildLinks(dept, number, profQuery) {
+        const base = `${
+          profQuery ? profQuery + " " : ""
+        }${dept} ${number} tamu`;
+        rmpBtn.onclick = () =>
+          window.open(
+            `https://www.google.com/search?q=${encodeURIComponent(
+              base + " rate my professor"
+            )}`
+          );
+        redditBtn.onclick = () =>
+          window.open(
+            `https://www.google.com/search?q=${encodeURIComponent(
+              base + " reddit"
+            )}`
+          );
+      }
+
+      function renderTable(data) {
+        tableHead.innerHTML = "";
+        const tr = document.createElement("tr");
+        data.tableData[0].forEach((cell, idx) => {
+          const th = document.createElement("th");
+          th.textContent = cell;
+          th.onclick = () => sortTable(idx);
+          tr.appendChild(th);
+        });
+        tableHead.appendChild(tr);
+
+        tableBody.innerHTML = "";
+        data.tableData.slice(1).forEach((row) => {
+          const tr = document.createElement("tr");
+          row.forEach((c) => {
+            const td = document.createElement("td");
+            td.textContent = c;
+            tr.appendChild(td);
+          });
+          tableBody.appendChild(tr);
+        });
+      }
+
+      function sortTable(columnIndex) {
+        const tbody = tableBody;
+        const rows = Array.from(tbody.querySelectorAll("tr"));
+        if (!rows.length) return;
+        const isNumeric = !isNaN(rows[0].cells[columnIndex].innerText.trim());
+        const ascending = tbody.dataset.sortOrder !== "asc";
+        tbody.dataset.sortOrder = ascending ? "asc" : "desc";
+        rows.sort((a, b) => {
+          const A = a.cells[columnIndex].innerText.trim();
+          const B = b.cells[columnIndex].innerText.trim();
+          return isNumeric
+            ? ascending
+              ? parseFloat(A) - parseFloat(B)
+              : parseFloat(B) - parseFloat(A)
+            : ascending
+            ? A.localeCompare(B)
+            : B.localeCompare(A);
+        });
+        tbody.innerHTML = "";
+        rows.forEach((r) => tbody.appendChild(r));
+      }
+
+      function filterRows(query) {
+        const q = query.trim().toUpperCase();
+        const rows = Array.from(tableBody.querySelectorAll("tr"));
+        rows.forEach((r) => {
+          const text = r.innerText.toUpperCase();
+          r.style.display = q && !text.includes(q) ? "none" : "";
+        });
+      }
+
+      async function fetchData() {
+        const dept = deptEl.value.trim().toUpperCase();
+        const number = numberEl.value.trim();
+        if (!dept || !number) {
+          showToast("Enter both department and number", "error");
+          return;
+        }
+        deptEl.value = dept;
+        setLoading(true);
+        resultCard.classList.add("hidden");
+        tableHead.innerHTML = "";
+        tableBody.innerHTML = "";
+        try {
+          const resp = await fetch(
+            `/api/scrape?dept=${encodeURIComponent(
+              dept
+            )}&number=${encodeURIComponent(number)}`
+          );
+          const data = await resp.json();
+          if (!resp.ok || data.error)
+            throw new Error(data.error || "Failed to fetch");
+          lastData = data;
+          courseTitle.textContent =
+            data.catalogData.courseDescription || `${dept} ${number}`;
+          prereq.innerHTML = data.catalogData.prerequisites || "";
+
+          const gpaHist = (
+            data.tableData
+              .slice(1)
+              .reduce((s, row) => s + (parseFloat(row[3]) || 0), 0) /
+            Math.max(1, data.tableData.length - 1)
+          ).toFixed(3);
+          const recent = data.tableData
+            .slice(1)
+            .filter((r) => parseInt(r[0]) >= 2022);
+          const gpaRec = (
+            recent.reduce((s, row) => s + (parseFloat(row[3]) || 0), 0) /
+            Math.max(1, recent.length)
+          ).toFixed(3);
+          gpaHistoricEl.textContent = gpaHist;
+          gpaRecentEl.textContent = gpaRec;
+
+          const dist = computeDistribution(data.tableData);
+          const ctx = document.getElementById("distChart").getContext("2d");
+          renderChart(ctx, dist);
+
+          renderTable(data);
+          buildLinks(dept, number, searchTextEl.value.trim());
+
+          resultCard.classList.remove("hidden");
+          updateShareLink();
+          saveRecent(dept, number);
+          loadRecent();
+        } catch (e) {
+          showToast(e.message || "Failed to fetch", "error");
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      viewBtn.addEventListener("click", fetchData);
+      copyLinkBtn.addEventListener("click", () => {
+        updateShareLink();
+        navigator.clipboard
+          .writeText(window.location.href)
+          .then(() => showToast("Link copied"));
+      });
+      exportCsvBtn.addEventListener("click", () => {
+        if (!lastData) return showToast("Nothing to export", "error");
+        download(
+          `${deptEl.value}_${numberEl.value}_grades.csv`,
+          toCSV(lastData.tableData)
+        );
+      });
+      searchTextEl.addEventListener("input", () => {
+        filterRows(searchTextEl.value);
+        buildLinks(
+          deptEl.value.trim().toUpperCase(),
+          numberEl.value.trim(),
+          searchTextEl.value.trim()
+        );
+      });
+      document.getElementById("dept").addEventListener("input", () => {
+        deptEl.value = deptEl.value.toUpperCase();
+      });
+      document.getElementById("number").addEventListener("input", () => {
+        numberEl.value = numberEl.value.replace(/[^0-9]/g, "");
+      });
+      deptEl.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") fetchData();
+      });
+      numberEl.addEventListener("keypress", (e) => {
+        if (e.key === "Enter") fetchData();
+      });
+
+      function applyTheme(mode) {
+        document.documentElement.dataset.theme = mode;
+        localStorage.setItem("theme", mode);
+        themeToggle.textContent = mode === "dark" ? "🌞" : "🌙";
+      }
+      themeToggle.addEventListener("click", () => {
+        const current = document.documentElement.dataset.theme || "light";
+        applyTheme(current === "light" ? "dark" : "light");
+      });
+
+      (function init() {
+        const savedTheme =
+          localStorage.getItem("theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
+        applyTheme(savedTheme);
+        loadRecent();
+        const params = new URLSearchParams(window.location.search);
+        const d = params.get("dept");
+        const n = params.get("number");
+        if (d) deptEl.value = d.toUpperCase();
+        if (n) numberEl.value = n;
+        if (d && n) fetchData();
+      })();
+    </script>
+  </body>
+</html>
